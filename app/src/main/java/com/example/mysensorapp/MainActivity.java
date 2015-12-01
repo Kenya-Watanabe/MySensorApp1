@@ -1,8 +1,16 @@
 package com.example.mysensorapp;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,15 +23,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.TextView;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 @SuppressLint({ "ShowToast", "SimpleDateFormat" })
 public class MainActivity extends Activity implements SensorEventListener, LocationListener {
@@ -117,18 +116,11 @@ public class MainActivity extends Activity implements SensorEventListener, Locat
 			startTime = System.currentTimeMillis();//計測開始時刻をミリ秒で取得
 			date = new Date(startTime);//計測開始時刻をミリ秒から日付に変換
 			simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");//計測開始時刻のフォーマット指定
-			//ここからServiceの開始
-			Intent intentStart = new Intent(getApplication(),SensorService.class);
-			intentStart.putExtra("measureStart",measureStart);
-			startService(intentStart);
 			break;
 
 		case R.id.stopButton:
 			buttonTextView.setText("stop");
 			measureStart = false;
-			//ここからServiceの終了
-			Intent intentStop = new Intent(getApplication(),SensorService.class);
-			stopService(intentStop);
 			break;
 		}
 	}
