@@ -1,5 +1,7 @@
 package com.example.mysensorapp;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -11,6 +13,8 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -53,8 +57,8 @@ public class SensorService extends Service implements SensorEventListener,Locati
     float[] outR = new float[MATRIX_SIZE];
     float[]    I = new float[MATRIX_SIZE];
 
-    private SensorManager sManager;//センサーマネージャー
-//    private LocationManager lManager;//ロケーションマネージャ（GPS）
+    private SensorManager sManager;//センサーマネージャ
+    private NotificationManager mNM;
 
     public SensorService() {
     }
@@ -77,7 +81,7 @@ public class SensorService extends Service implements SensorEventListener,Locati
 
         this.sManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 //        this.lManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        //ロケーションサービスの設定
+//        //ロケーションサービスの設定
 //        Criteria criteria = new Criteria();
 //        criteria.setAccuracy(Criteria.ACCURACY_FINE);
 //        criteria.setAltitudeRequired(true);
@@ -94,6 +98,23 @@ public class SensorService extends Service implements SensorEventListener,Locati
 
     @Override
     public IBinder onBind(Intent intent) {
+
+        Toast.makeText(this,"OnBind",Toast.LENGTH_SHORT).show();
+        Intent notificationIntent = new Intent(this,SensorService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this,0,notificationIntent,0);
+        //サービスを永続化するために、通知を作成する
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+        builder.setContentIntent(pendingIntent)
+                .setTicker("準備中")
+                .setContentTitle("title")
+                .setContentText("text")
+                .setSmallIcon(android.R.drawable.ic_dialog_info);
+        mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+        mNM.notify(R.string.hello_world,builder.build());
+        startForeground(R.string.hello_world,builder.build());
+
+
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -374,4 +395,5 @@ public class SensorService extends Service implements SensorEventListener,Locati
     public void onProviderDisabled(String provider) {
 
     }
+
 }
